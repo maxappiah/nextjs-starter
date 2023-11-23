@@ -2,7 +2,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-
 const Container = styled.div`
     max-width: 600px;
     margin: 0 auto;
@@ -53,8 +52,8 @@ const Button = styled.button`
 const ContactPage = () => {
     return (
         <Container>
-            <Title>Contact Us</Title>
-            <Paragraph>Feel free to reach out to us using the contact form below.</Paragraph>
+            <h1>Contact Us</h1>
+            <p>Feel free to reach out to us using the contact form below.</p>
             <Form>
                 <Label htmlFor="name">Name:</Label>
                 <Input type="text" id="name" name="name" />

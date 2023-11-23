@@ -1,16 +1,17 @@
 import Link from 'next/link';
 
-const header = () => {
-  return (
-    <nav>
-      <div className="logo">
-        <h1>Ninja List</h1>
-      </div>
-      <Link href="/"><a>Home</a></Link>
-      <Link href="/about"><a>About</a></Link>
-      <Link href="/contact/"><a>Contact</a></Link>
-    </nav>
-);
+export default function Header() {
+  
+    return (
+
+    <header>
+      <nav>
+        <ul>
+          <li><Link href="/">Home</Link></li>
+          <li><Link href="/about">About</Link></li>
+          <li><Link href="/contact">Contact</Link></li>
+        </ul>
+      </nav>
+    </header>
+  );
 }
- 
-export default header;

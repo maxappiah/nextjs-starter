@@ -105,3 +105,22 @@ a {
     color-scheme: dark;
   }
 }
+
+nav ul {
+  display: flex;
+  
+}
+nav ul li {
+  margin: 10px;
+  padding: 5px;
+  list-style: none;
+}
+
+a {
+  color: rgb(229, 222, 222);
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}

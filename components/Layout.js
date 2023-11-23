@@ -1,14 +1,13 @@
-import Footer from "./footer"
-import Navbar from "./header"
-
-const Layout = ({ children }) => {
+// import custom components
+import Footer from "./Footer";
+import Header from "./Header";
+export default function Layout({ children }) {
+ 
   return (
-    <div className="content">
-      <Navbar />
-      { children }
+    <div>
+      <Header />
+        {children}
       <Footer />
     </div>
   );
 }
- 
-export default Layout;

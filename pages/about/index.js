@@ -2,6 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+
 const Container = styled.div`
     max-width: 800px;
     margin: 0 auto;
@@ -23,16 +24,13 @@ const Paragraph = styled.p`
 const About = () => {
     return (
         <Container>
-            <Title>About</Title>
-            <Paragraph>Welcome to our application!</Paragraph>
-            <Paragraph>
-                We are a team of developers passionate about creating amazing web
-                applications using Next.js.
-            </Paragraph>
-            <Paragraph>
+            <h1>About</h1>
+            <p>Welcome to our application!</p>
+            <p>We are a team of developers passionate about creating amazing web
+                applications using Next.js.</p>
+            <p>
                 This is the about page of our application. Here, you can learn more
-                about our team, our mission, and the technologies we use.
-            </Paragraph>
+                about our team, our mission, and the technologies we use.</p>
         </Container>
     );
 };
