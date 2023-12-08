@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.scss';
 import Link from 'next/link';
 import styled from 'styled-components';
+import pexels from '../public/pexels-steve-johnson-1269968.jpg'
 
 
 const Container = styled.div`
@@ -32,6 +33,8 @@ export default function Home() {
       <p className={styles.description}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam odio magna, aliquam quis velit id, ornare tempus elit. Suspendisse imperdiet tincidunt egestas. Aliquam blandit diam in velit suscipit ultricies. Nunc posuere metus quis suscipit ornare. Nam nec venenatis erat, et iaculis tellus. In non magna nisi. Cras ut ex vestibulum, dignissim neque mattis, aliquet nisl. Phasellus fermentum faucibus lectus vel cursus. Sed id odio vel turpis sollicitudin luctus. Sed rhoncus orci mattis fermentum iaculis. Pellentesque quis nunc sed libero gravida facilisis nec eu felis. In accumsan vel mi vitae porta. Maecenas auctor ultricies felis, porttitor accumsan leo dignissim a. Nulla pretium sapien eu tellus ornare, nec dapibus eros iaculis. Proin risus mi, faucibus at felis vitae, eleifend hendrerit sapien.</p>
 
       <p className={styles.description}>Phasellus in nunc eget mauris varius condimentum et et magna. Donec vitae arcu sit amet purus imperdiet condimentum. Proin vel orci lorem. Praesent lacus magna, elementum sit amet tellus imperdiet, venenatis elementum erat. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse vulputate aliquam nibh, id vestibulum nibh. Nullam luctus blandit neque, in pharetra mi tempor et. Quisque hendrerit gravida elit in tempus. Cras malesuada eros in varius tincidunt.</p>
+
+      <Image src={pexels} alt="Picture of the author" width={600} height={300} placeholder='blur'/>
     </div>
     </Container>
   )

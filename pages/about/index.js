@@ -1,6 +1,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
+import styles from '@/styles/Home.module.scss';
 
 
 const Container = styled.div`
@@ -24,13 +25,16 @@ const Paragraph = styled.p`
 const About = () => {
     return (
         <Container>
-            <h1>About</h1>
-            <p>Welcome to our application!</p>
-            <p>We are a team of developers passionate about creating amazing web
-                applications using Next.js.</p>
-            <p>
-                This is the about page of our application. Here, you can learn more
-                about our team, our mission, and the technologies we use.</p>
+            <div className={styles.container}>
+                <h1 className={styles.title}>About</h1>
+                <h2 className={styles.subtitle}>Our Mission</h2>
+                <p className={styles.description}>Welcome to our application!</p>
+                <p className={styles.description}>We are a team of developers passionate about creating amazing web
+                    applications using Next.js.</p>
+                <p className={styles.description}>
+                    This is the about page of our application. Here, you can learn more
+                    about our team, our mission, and the technologies we use.</p>
+            </div>
         </Container>
     );
 };
