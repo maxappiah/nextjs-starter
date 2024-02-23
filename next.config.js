@@ -6,6 +6,16 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'pexel.com',
+        pathname: '**',
+        port: '',
+      },
+    ],
+  },
   compiler: {
     // Enables the styled-components SWC transform
     styledComponents: true
