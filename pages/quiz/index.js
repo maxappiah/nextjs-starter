@@ -1,38 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-const Container = styled.div`
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-`;
-
-const Question = styled.h2`
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-`;
-
-const AnswersList = styled.ul`
-  list-style: none;
-  padding: 0;
-`;
-
-const Answer = styled.li`
-  margin-bottom: 10px;
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-    color: blue;
-  }
-`;
-
-const Feedback = styled.p`
-  font-weight: bold;
-  margin-top: 10px;
-  color: #909;
-`;
+import style from './quiz.module.scss' 
 
 const decodeHtml = (html) => {
     var txt = document.createElement('textarea');
@@ -41,57 +9,106 @@ const decodeHtml = (html) => {
   };
 
 const Quiz = () => {
-    const [questions, setQuestions] = useState([]);
-    const [answer, setAnswer] = useState('');
-  
-    useEffect(() => {
-      const fetchQuestions = async () => {
-        try {
-          const response = await axios.get('https://opentdb.com/api.php?amount=10');
-          setQuestions(response.data.results.map((question) => ({
-            ...question,
-            question: decodeHtml(question.question),
-            correct_answer: decodeHtml(question.correct_answer),
-            incorrect_answers: question.incorrect_answers.map((answer) => decodeHtml(answer))
-          })));
-        } catch (error) {
-          console.error('Error fetching questions:', error);
-        }
-      };
-      fetchQuestions();
-    }, []);
-  
-    const handleAnswerClick = (correctAnswer) => {
-      setAnswer(correctAnswer ? 'Correct!' : 'Wrong!');
+  const [questions, setQuestions] = useState([]);
+  const [activeQuestion, setActiveQuestion] = useState(0);
+  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+  const [checked, setChecked] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [result, setResult] = useState({
+    score: 0,
+    correctAnswers: 0,
+    wrongAnswers: 0,
+  });
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await axios.get(
+          'https://opentdb.com/api.php?amount=10'
+        );
+        const fetchedQuestions = response.data.results.map((question) => ({
+          question: decodeHtml(question.question),
+          answers: [...question.incorrect_answers, question.correct_answer].map(answer => decodeHtml(answer)),
+          correctAnswer: decodeHtml(question.correct_answer),
+        }));
+        setQuestions(fetchedQuestions);
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+      }
     };
-  
-    return (
-      <Container>
-        <h1>Quiz</h1>
-        {questions.map((question, index) => (
-          <div key={index}>
-            <Question>{question.question}</Question>
-            <AnswersList>
-              {question.incorrect_answers.map((answer, idx) => (
-                <Answer
-                  key={idx}
-                  onClick={() => handleAnswerClick(false)}
-                >
-                  {answer}
-                </Answer>
-              ))}
-              <Answer
-                onClick={() => handleAnswerClick(true)}
-              >
-                {question.correct_answer}
-              </Answer>
-            </AnswersList>
-            {answer && <Feedback>{answer}</Feedback>}
-          </div>
-        ))}
-      </Container>
-    );
+    fetchQuestions();
+  }, []);
+
+  const handleAnswerSelected = (answer, idx) => {
+    setChecked(true);
+    setSelectedAnswerIndex(idx);
+    if (answer === questions[activeQuestion].correctAnswer) {
+      setResult((prev) => ({
+        ...prev,
+        score: prev.score + 5,
+        correctAnswers: prev.correctAnswers + 1,
+      }));
+    } else {
+      setResult((prev) => ({
+        ...prev,
+        wrongAnswers: prev.wrongAnswers + 1,
+      }));
+    }
   };
-  
+
+  const nextQuestion = () => {
+    setSelectedAnswerIndex(null);
+    if (activeQuestion < questions.length - 1) {
+      setActiveQuestion((prev) => prev + 1);
+    } else {
+      setShowResult(true);
+    }
+    setChecked(false);
+  };
+
+  return (
+    <div className='container'>
+      <h1>Quiz</h1>
+      {showResult ? (
+        <div className='quiz-container'>
+          <h3>Results</h3>
+          <h3>Overall {(result.score / (questions.length * 5)) * 100}%</h3>
+          <p>Total Questions: {questions.length}</p>
+          <p>Total Score: {result.score}</p>
+          <p>Correct Answers: {result.correctAnswers}</p>
+          <p>Wrong Answers: {result.wrongAnswers}</p>
+          <button onClick={() => window.location.reload()}>Restart</button>
+        </div>
+      ) : (
+        <div className='quiz-container'>
+          <h2>
+            Question: {activeQuestion + 1}/{questions.length}
+          </h2>
+          <h3>{questions[activeQuestion]?.question}</h3>
+          <ul>
+            {questions[activeQuestion]?.answers?.map((answer, idx) => (
+              <li
+                key={idx}
+                onClick={() => handleAnswerSelected(answer, idx)}
+                className={
+                  selectedAnswerIndex === idx ? 'li-selected' : 'li-hover'
+                }
+              >
+                {answer}
+              </li>
+            ))}
+          </ul>
+          <button
+            onClick={nextQuestion}
+            disabled={!checked}
+            className='btn'
+          >
+            {activeQuestion === questions.length - 1 ? 'Finish' : 'Next'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default Quiz;
