@@ -29,19 +29,26 @@ const Quiz = () => {
         );
         const fetchedQuestions = response.data.results.map((question) => ({
           question: decodeHtml(question.question),
-          answers: [
-            ...question.incorrect_answers,
-            question.correct_answer
-          ].map((answer) => decodeHtml(answer)),
+          answers: [...question.incorrect_answers, question.correct_answer].map(answer => decodeHtml(answer)),
           correctAnswer: decodeHtml(question.correct_answer),
         }));
-        setQuestions(fetchedQuestions);
+        
+        const randomizedQuestions = fetchedQuestions.map(question => {
+          const { answers, correctAnswer } = question;
+          const randomizedAnswers = [correctAnswer, ...answers.slice(0, -1)].sort(() => Math.random() - 0.5);
+          return {
+            ...question,
+            answers: randomizedAnswers,
+          };
+        });
+        setQuestions(randomizedQuestions);
       } catch (error) {
         console.error('Error fetching questions:', error);
       }
     };
     fetchQuestions();
   }, []);
+  
 
   const handleAnswerSelected = (answer, idx) => {
     if (!checked) {
