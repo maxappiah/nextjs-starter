@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import style from './quiz.module.scss' 
+import style from './quiz.module.scss';
 
 const decodeHtml = (html) => {
-    var txt = document.createElement('textarea');
-    txt.innerHTML = html;
-    return txt.value;
-  };
+  var txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+};
 
 const Quiz = () => {
   const [questions, setQuestions] = useState([]);
@@ -19,6 +19,7 @@ const Quiz = () => {
     correctAnswers: 0,
     wrongAnswers: 0,
   });
+  const [isCorrectAnswer, setIsCorrectAnswer] = useState(Array(10).fill(null));
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -28,7 +29,10 @@ const Quiz = () => {
         );
         const fetchedQuestions = response.data.results.map((question) => ({
           question: decodeHtml(question.question),
-          answers: [...question.incorrect_answers, question.correct_answer].map(answer => decodeHtml(answer)),
+          answers: [
+            ...question.incorrect_answers,
+            question.correct_answer
+          ].map((answer) => decodeHtml(answer)),
           correctAnswer: decodeHtml(question.correct_answer),
         }));
         setQuestions(fetchedQuestions);
@@ -40,18 +44,20 @@ const Quiz = () => {
   }, []);
 
   const handleAnswerSelected = (answer, idx) => {
-    setChecked(true);
-    setSelectedAnswerIndex(idx);
-    if (answer === questions[activeQuestion].correctAnswer) {
+    if (!checked) {
+      setChecked(true);
+      setSelectedAnswerIndex(idx);
+      const isCorrect = answer === questions[activeQuestion].correctAnswer;
+      setIsCorrectAnswer((prev) => {
+        const updatedArray = [...prev];
+        updatedArray[activeQuestion] = isCorrect;
+        return updatedArray;
+      });
       setResult((prev) => ({
         ...prev,
-        score: prev.score + 5,
-        correctAnswers: prev.correctAnswers + 1,
-      }));
-    } else {
-      setResult((prev) => ({
-        ...prev,
-        wrongAnswers: prev.wrongAnswers + 1,
+        score: prev.score + (isCorrect ? 5 : 0),
+        correctAnswers: prev.correctAnswers + (isCorrect ? 1 : 0),
+        wrongAnswers: prev.wrongAnswers + (isCorrect ? 0 : 1),
       }));
     }
   };
@@ -67,10 +73,10 @@ const Quiz = () => {
   };
 
   return (
-    <div className='container'>
+    <div className={style.container}>
       <h1>Quiz</h1>
       {showResult ? (
-        <div className='quiz-container'>
+        <div className={style['quiz-container']}>
           <h3>Results</h3>
           <h3>Overall {(result.score / (questions.length * 5)) * 100}%</h3>
           <p>Total Questions: {questions.length}</p>
@@ -80,7 +86,7 @@ const Quiz = () => {
           <button onClick={() => window.location.reload()}>Restart</button>
         </div>
       ) : (
-        <div className='quiz-container'>
+        <div className={style['quiz-container']}>
           <h2>
             Question: {activeQuestion + 1}/{questions.length}
           </h2>
@@ -88,14 +94,22 @@ const Quiz = () => {
           <ul>
             {questions[activeQuestion]?.answers?.map((answer, idx) => (
               <li
-                key={idx}
-                onClick={() => handleAnswerSelected(answer, idx)}
-                className={
-                  selectedAnswerIndex === idx ? 'li-selected' : 'li-hover'
-                }
-              >
-                {answer}
-              </li>
+              key={idx}
+              onClick={() => handleAnswerSelected(answer, idx)}
+              className={
+                selectedAnswerIndex === idx
+                  ? answer === questions[activeQuestion].correctAnswer
+                    ? `${style['li-selected']} ${style['correct-answer']}`
+                    : `${style['li-selected']} ${style['wrong-answer']}`
+                  : style['li-hover']
+              }
+              style={{
+                cursor: selectedAnswerIndex !== null ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {answer}
+            </li>
+            
             ))}
           </ul>
           <button
