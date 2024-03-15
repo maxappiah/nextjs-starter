@@ -19,47 +19,64 @@ const Quiz = () => {
     correctAnswers: 0,
     wrongAnswers: 0,
   });
-  const [isCorrectAnswer, setIsCorrectAnswer] = useState(Array(10).fill(null));
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          'https://opentdb.com/api.php?amount=10'
+          'https://opentdb.com/api_category.php'
         );
-        const fetchedQuestions = response.data.results.map((question) => ({
-          question: decodeHtml(question.question),
-          answers: [...question.incorrect_answers, question.correct_answer].map(answer => decodeHtml(answer)),
-          correctAnswer: decodeHtml(question.correct_answer),
-        }));
-        
-        const randomizedQuestions = fetchedQuestions.map(question => {
-          const { answers, correctAnswer } = question;
-          const randomizedAnswers = [correctAnswer, ...answers.slice(0, -1)].sort(() => Math.random() - 0.5);
-          return {
-            ...question,
-            answers: randomizedAnswers,
-          };
-        });
-        setQuestions(randomizedQuestions);
+        setCategories(response.data.trivia_categories);
       } catch (error) {
-        console.error('Error fetching questions:', error);
+        console.error('Error fetching categories:', error);
       }
     };
-    fetchQuestions();
+    fetchCategories();
   }, []);
-  
+
+  const fetchQuestionsByCategory = async () => {
+    try {
+      const response = await axios.get(
+        `https://opentdb.com/api.php?amount=10&category=${selectedCategory}`
+      );
+      const fetchedQuestions = response.data.results.map((question) => ({
+        question: decodeHtml(question.question),
+        answers: [...question.incorrect_answers, question.correct_answer].map(answer => decodeHtml(answer)),
+        correctAnswer: decodeHtml(question.correct_answer),
+      }));
+      setQuestions(fetchedQuestions);
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+    }
+  };
+
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+  };
+
+  const startQuiz = () => {
+    fetchQuestionsByCategory();
+    setActiveQuestion(0);
+    setChecked(false);
+    setShowResult(false);
+    setResult({
+      score: 0,
+      correctAnswers: 0,
+      wrongAnswers: 0
+    });
+    setIsAnswered(false);
+  };
 
   const handleAnswerSelected = (answer, idx) => {
     if (!checked) {
       setChecked(true);
       setSelectedAnswerIndex(idx);
+      setIsAnswered(true);
+
       const isCorrect = answer === questions[activeQuestion].correctAnswer;
-      setIsCorrectAnswer((prev) => {
-        const updatedArray = [...prev];
-        updatedArray[activeQuestion] = isCorrect;
-        return updatedArray;
-      });
       setResult((prev) => ({
         ...prev,
         score: prev.score + (isCorrect ? 5 : 0),
@@ -77,11 +94,34 @@ const Quiz = () => {
       setShowResult(true);
     }
     setChecked(false);
+    setIsAnswered(false);
   };
 
   return (
     <div className={style.container}>
       <h1>Quiz</h1>
+      {categories.length > 0 ? (
+        <div>
+          <label htmlFor="category">Choose a category:</label>
+          <select
+            id="category"
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            className={style.categorySelect}
+          >
+            <option value="">Select Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <button onClick={startQuiz}>Start Quiz</button>
+        </div>
+      ) : (
+        <p>Loading categories...</p>
+      )}
+
       {showResult ? (
         <div className={style['quiz-container']}>
           <h3>Results</h3>
@@ -101,29 +141,26 @@ const Quiz = () => {
           <ul>
             {questions[activeQuestion]?.answers?.map((answer, idx) => (
               <li
-              key={idx}
-              onClick={() => handleAnswerSelected(answer, idx)}
-              className={
-                selectedAnswerIndex === idx
-                  ? answer === questions[activeQuestion].correctAnswer
+                key={idx}
+                onClick={() => handleAnswerSelected(answer, idx)}
+                className={ 
+                  (selectedAnswerIndex === idx && isAnswered) ||
+                  (isAnswered && answer === questions[activeQuestion].correctAnswer)
+                    ? answer === questions[activeQuestion].correctAnswer
                     ? `${style['li-selected']} ${style['correct-answer']}`
                     : `${style['li-selected']} ${style['wrong-answer']}`
-                  : style['li-hover']
-              }
-              style={{
-                cursor: selectedAnswerIndex !== null ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {answer}
-            </li>
-            
+                  : style['li']
+                }
+                style={{
+                  cursor: selectedAnswerIndex !== null ? 'not-allowed' : 'pointer',
+                  pointerEvents: isAnswered ? 'none' : 'auto',
+                }}
+              >
+                {answer}
+              </li>
             ))}
           </ul>
-          <button
-            onClick={nextQuestion}
-            disabled={!checked}
-            className='btn'
-          >
+          <button onClick={nextQuestion} disabled={!checked} className="btn">
             {activeQuestion === questions.length - 1 ? 'Finish' : 'Next'}
           </button>
         </div>
