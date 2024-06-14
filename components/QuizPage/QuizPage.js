@@ -1,6 +1,7 @@
 import React from 'react';
 import style from '@/styles/quiz.module.scss';
 import { useRouter } from 'next/router';
+import ProgressBar from '@/components/ProgressBar/ProgressBar';  // Import the ProgressBar component
 
 const QuizPage = ({ questions, activeQuestion, setActiveQuestion, selectedAnswerIndex, setSelectedAnswerIndex, checked, setChecked, showResult, setShowResult, result, setResult, isAnswered, setIsAnswered }) => {
   const router = useRouter();
@@ -33,8 +34,11 @@ const QuizPage = ({ questions, activeQuestion, setActiveQuestion, selectedAnswer
     setIsAnswered(false);
   };
 
+  const progress = ((activeQuestion + 1) / questions.length) * 100;  // Calculate progress
+
   return (
     <div className={style.quizContainer}>
+      <ProgressBar progress={progress} />  {/* Add the ProgressBar */}
       <h2>Question: {activeQuestion + 1}/{questions.length}</h2>
       <h3>{questions[activeQuestion]?.question}</h3>
       <ul className={style.answerList}>

@@ -20,6 +20,7 @@ const shuffleArray = (array) => {
 const MenuPage = ({ setQuestions, setActiveQuestion, setResult, setShowResult, setChecked, setIsAnswered }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -36,7 +37,7 @@ const MenuPage = ({ setQuestions, setActiveQuestion, setResult, setShowResult, s
 
   const fetchQuestionsByCategory = async () => {
     try {
-      const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${selectedCategory}`);
+      const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${selectedCategory}&difficulty=${selectedDifficulty}`);
       const fetchedQuestions = response.data.results.map((question) => ({
         question: decodeHtml(question.question),
         answers: shuffleArray([...question.incorrect_answers, question.correct_answer].map((answer) => decodeHtml(answer))),
@@ -66,26 +67,51 @@ const MenuPage = ({ setQuestions, setActiveQuestion, setResult, setShowResult, s
     setSelectedCategory(e.target.value);
   };
 
+  const handleDifficultyChange = (e) => {
+    setSelectedDifficulty(e.target.value);
+  };
+
   return (
     <div className={style.container}>
       <h1>Quiz</h1>
       {categories.length > 0 ? (
         <div>
-          <label htmlFor="category">Choose a category:</label>
-          <select
-            id="category"
-            value={selectedCategory}
-            onChange={handleCategoryChange}
-            className={style.categorySelect}
+          <div>
+            <label htmlFor="category">Choose a category:</label>
+            <select
+              id="category"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className={style.categorySelect}
+            >
+              <option value="">Select Category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            
+            <label htmlFor="difficulty">Choose difficulty:</label>
+            <select
+              id="difficulty"
+              value={selectedDifficulty}
+              onChange={handleDifficultyChange}
+              className={style.difficultySelect}
+            >
+              <option value="">Select Difficulty</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+          <button
+            className={`${style.button} ${(!selectedCategory || !selectedDifficulty) && style.buttonDisabled}`}
+            onClick={startQuiz}
+            disabled={!selectedCategory || !selectedDifficulty}
           >
-            <option value="">Select Category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-          <button className={style.button} onClick={startQuiz}>Start Quiz</button>
+            Start Quiz
+          </button>
         </div>
       ) : (
         <p>Loading categories...</p>

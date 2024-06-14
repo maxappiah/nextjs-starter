@@ -2,15 +2,61 @@
     text-align: center;
     padding: 2rem;
   }
+
+  .container,.container-fluid,.container-lg,.container-md,.container-sm,.container-xl,.container-xxl {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    width: 100%;
+    padding-right: calc(var(--bs-gutter-x) * .5);
+    padding-left: calc(var(--bs-gutter-x) * .5);
+    margin-right: auto;
+    margin-left: auto
+}
+
+@media (min-width: 576px) {
+    .container,.container-sm {
+        max-width:540px
+    }
+}
+
+@media (min-width: 768px) {
+    .container,.container-md,.container-sm {
+        max-width:720px
+    }
+}
+
+@media (min-width: 992px) {
+    .container,.container-lg,.container-md,.container-sm {
+        max-width:960px
+    }
+}
+
+@media (min-width: 1200px) {
+    .container,.container-lg,.container-md,.container-sm,.container-xl {
+        max-width:1140px
+    }
+}
+
+@media (min-width: 1400px) {
+    .container,.container-lg,.container-md,.container-sm,.container-xl,.container-xxl {
+        max-width:1320px
+    }
+}
   
   .quizContainer {
     margin-top: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
   }
   
-  .categorySelect {
+  .categorySelect,
+  .difficultySelect {
     margin: 1rem;
     padding: 0.5rem;
   }
+
   
   .answerList {
     list-style: none;
@@ -30,18 +76,18 @@
   }
   
   .correctAnswer {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
+    background-color: #87e09c;
+    border-color: #77bf83;
   }
   
   .wrongAnswer {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
+    background-color: #c4212f;
+    border-color: #8a1823;
   }
   
   .button {
     padding: 0.5rem 1rem;
-    margin: 1rem;
+    margin: 1rem 0 0;
     border: none;
     border-radius: 4px;
     background-color: #0070f3;
@@ -50,7 +96,17 @@
   }
   
   .buttonDisabled {
-    background-color: #ddd;
+    background-color: #939090;
     cursor: not-allowed;
   }
   
+ .button:disabled,
+ .button.buttonDisabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.chartContainer {
+  margin: 20px 0;
+  width: 50%;
+}
